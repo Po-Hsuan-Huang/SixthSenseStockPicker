@@ -1,8 +1,8 @@
 # 🌌 Synesthetic Stock Radar (React + Three.js)
 
-**Experience stocks through AI's sixth sense** - A stunning 3D visualization of financial data using real-time physics.
+**Experience stocks through AI's sixth sense** - A stunningA 3D data visualization tool that maps financial metrics to physical properties (size, color, glow, motion) to help investors intuitively spot opportunities.
 
-Built with React, Three.js, and WebGL.
+[**View Visual Walkthrough**](WALKTHROUGH.md)
 
 ## ✨ Features
 
