@@ -61,6 +61,34 @@ export function PhysicsEngine() {
                 }
             }
 
+            // GRAVITATIONAL WAVE (Repulsive Force)
+            // @ts-ignore
+            const { wave } = useStockStore.getState(); // Access state directly inside loop for performance
+            if (wave.active) {
+                const waveSpeed = 50; // Must match shader speed
+                const waveTime = (Date.now() / 1000) - wave.startTime;
+                const waveRadius = waveTime * waveSpeed;
+                const waveWidth = 15; // Width of the force field
+
+                const dx = x - wave.center[0];
+                const dy = y - wave.center[1];
+                const dz = z - wave.center[2];
+                const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                // Check if stock is within the expanding wave ring
+                if (Math.abs(dist - waveRadius) < waveWidth) {
+                    // Strong repulsive impulse
+                    const force = 2.0; // Strength of the wave
+                    const dirX = dx / dist;
+                    const dirY = dy / dist;
+                    const dirZ = dz / dist;
+
+                    vx += dirX * force;
+                    vy += dirY * force;
+                    vz += dirZ * force;
+                }
+            }
+
             // 2. Collision detection (simple sphere-sphere)
             if (collisionsEnabled) {
                 for (let j = 0; j < stocks.length; j++) {

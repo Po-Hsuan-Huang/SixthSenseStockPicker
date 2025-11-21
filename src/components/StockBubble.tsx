@@ -17,11 +17,12 @@ export function StockBubble({ ticker, position, properties, onClick }: StockBubb
     const meshRef = useRef<THREE.Mesh>(null);
     const materialRef = useRef<any>(null);
     const [isHovered, setIsHovered] = useState(false);
-    const { showLabels } = useStockStore();
+    const { showLabels, wave } = useStockStore();
 
     // Create color objects once
     const color = useMemo(() => new THREE.Color(properties.color), [properties.color]);
     const glowColor = useMemo(() => new THREE.Color(properties.glowColor), [properties.glowColor]);
+    const heatColor = useMemo(() => new THREE.Color(properties.heatColor), [properties.heatColor]);
 
     useFrame((state) => {
         if (materialRef.current) {
@@ -29,7 +30,20 @@ export function StockBubble({ ticker, position, properties, onClick }: StockBubb
             // Lerp colors for smooth transitions if properties change
             materialRef.current.uColor.lerp(color, 0.1);
             materialRef.current.uGlowColor.lerp(glowColor, 0.1);
+            materialRef.current.uHeatColor.lerp(heatColor, 0.1);
             materialRef.current.uOpacity = properties.opacity;
+
+            // Synesthetic properties
+            materialRef.current.uRoughness = properties.roughness;
+            materialRef.current.uDensity = properties.density;
+            materialRef.current.uHeatIntensity = properties.heatIntensity;
+
+            // Wave uniforms
+            materialRef.current.uWaveActive = wave.active ? 1.0 : 0.0;
+            if (wave.active) {
+                materialRef.current.uWaveCenter.set(wave.center[0], wave.center[1], wave.center[2]);
+                materialRef.current.uWaveTime = (Date.now() / 1000) - wave.startTime;
+            }
         }
 
         if (meshRef.current) {
@@ -60,10 +74,14 @@ export function StockBubble({ ticker, position, properties, onClick }: StockBubb
                     transparent
                     uColor={color}
                     uGlowColor={glowColor}
+                    uHeatColor={heatColor}
                     uOpacity={properties.opacity}
                     uFresnelBias={0.1}
                     uFresnelScale={1.0}
                     uFresnelPower={2.0}
+                    uRoughness={properties.roughness}
+                    uDensity={properties.density}
+                    uHeatIntensity={properties.heatIntensity}
                 />
             </mesh>
 

@@ -12,6 +12,11 @@ declare global {
                 uFresnelScale?: number;
                 uFresnelPower?: number;
                 uTime?: number;
+                // New synesthetic uniforms
+                uRoughness?: number;
+                uDensity?: number;
+                uHeatIntensity?: number;
+                uHeatColor?: THREE.Color;
             };
         }
     }

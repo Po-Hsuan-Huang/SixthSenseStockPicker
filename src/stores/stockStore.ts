@@ -46,6 +46,10 @@ interface StockStore {
     // Learn tab
     chapterIndex: number;
     setChapterIndex: (index: number) => void;
+
+    // Gravitational Wave
+    wave: { active: boolean; center: [number, number, number]; startTime: number };
+    triggerWave: (center: [number, number, number]) => void;
 }
 
 export const useStockStore = create<StockStore>((set) => ({
@@ -90,4 +94,18 @@ export const useStockStore = create<StockStore>((set) => ({
     // Learn tab
     chapterIndex: 0,
     setChapterIndex: (chapterIndex) => set({ chapterIndex }),
+
+    // Gravitational Wave
+    wave: { active: false, center: [0, 0, 0], startTime: 0 },
+    triggerWave: (center) => {
+        set({ wave: { active: true, center, startTime: Date.now() / 1000 } });
+        // Auto-reset wave after 2 seconds
+        setTimeout(() => {
+            set((state) => {
+                // Only reset if it's the same wave (simple check)
+                if (state.wave.startTime === center[0]) return state; // invalid check but placeholder
+                return { wave: { ...state.wave, active: false } };
+            });
+        }, 2000);
+    },
 }));

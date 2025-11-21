@@ -38,6 +38,19 @@ export function RadarView() {
                 camera={{ position: [0, 0, 50], fov: 60 }}
                 style={{ background: '#0a0e27' }}
             >
+                {/* Invisible sphere to catch clicks for wave trigger */}
+                <mesh
+                    visible={false}
+                    scale={[200, 200, 200]}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        useStockStore.getState().triggerWave([e.point.x, e.point.y, e.point.z]);
+                    }}
+                >
+                    <sphereGeometry />
+                    <meshBasicMaterial side={2} /> {/* DoubleSide */}
+                </mesh>
+
                 {/* Lighting */}
                 <ambientLight intensity={0.5} />
                 <pointLight position={[10, 10, 10]} intensity={1} />
@@ -98,15 +111,22 @@ export function RadarView() {
                     backdropFilter: 'blur(10px)',
                     padding: '1.5rem',
                     borderRadius: '12px',
-                    maxWidth: '400px',
+                    maxWidth: '450px',
                     border: '1px solid rgba(102, 126, 234, 0.2)',
                 }}
             >
-                <h4 style={{ margin: '0 0 1rem 0', color: '#f0f0f0' }}>🎨 Visual Properties</h4>
-                <div style={{ color: '#a0aec0', fontSize: '0.9rem', lineHeight: '1.6' }}>
-                    <div>🔵 Size = Market Cap | 🎨 Color = Price Change (Blue→Red)</div>
-                    <div>✨ Glow = Rule of 40 Score | 🌫️ Opacity = Debt Level</div>
-                    <div style={{ fontStyle: 'italic', marginTop: '0.5rem' }}>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#f0f0f0' }}>🎨 Synesthetic Properties</h4>
+                <div style={{ color: '#a0aec0', fontSize: '0.9rem', lineHeight: '1.8' }}>
+                    <div>🔵 <strong>Size</strong> = Market Cap</div>
+                    <div>🎨 <strong>Color</strong> = Price Change (Blue→Red)</div>
+                    <div>✨ <strong>Glow</strong> = Rule of 40 Score</div>
+                    <div>🌫️ <strong>Opacity</strong> = Debt Level</div>
+                    <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                        <div>💎 <strong>Density</strong> = Profit Margins (high = solid/heavy)</div>
+                        <div>🔥 <strong>Pulsating</strong> = Trading Volume (high = vibrant/hot)</div>
+                        <div>🪨 <strong>Texture</strong> = P/E Ratio (low = smooth, high = rough)</div>
+                    </div>
+                    <div style={{ fontStyle: 'italic', marginTop: '0.75rem', fontSize: '0.85rem' }}>
                         📍 Bubbles are attracted to high-value stocks (bright glowing bubbles)
                     </div>
                 </div>

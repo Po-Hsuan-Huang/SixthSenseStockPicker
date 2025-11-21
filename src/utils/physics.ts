@@ -33,6 +33,11 @@ export interface BubbleProperties extends StockData {
   vx: number;
   vy: number;
   vz: number;
+  // New synesthetic properties
+  roughness: number;      // P/E ratio → surface texture
+  density: number;        // Operating margin → mass/weight
+  heatIntensity: number;  // Volume → heat/temperature
+  heatColor: string;      // Volume → heat glow color
 }
 
 /**
@@ -191,6 +196,94 @@ export function getElasticity(volatility: number): number {
 }
 
 /**
+ * Calculate surface roughness based on P/E ratio
+ * Low P/E = smooth surface (value stock)
+ * High P/E = rough/spiky surface (growth/speculative stock)
+ */
+export function getRoughness(pe_ratio: number): number {
+  if (pe_ratio <= 0) return 0.1; // Smooth for negative/no P/E
+
+  // Normalize P/E to roughness scale
+  // P/E 0-15: very smooth (value stocks)
+  // P/E 15-30: moderate roughness
+  // P/E 30+: very rough/spiky (growth stocks)
+
+  if (pe_ratio <= 15) {
+    return normalize(pe_ratio, 0, 15, 0.0, 0.3); // 0.0 to 0.3 (smooth)
+  } else if (pe_ratio <= 30) {
+    return normalize(pe_ratio, 15, 30, 0.3, 0.6); // 0.3 to 0.6 (moderate)
+  } else {
+    return Math.min(1.0, normalize(pe_ratio, 30, 100, 0.6, 1.0)); // 0.6 to 1.0 (rough)
+  }
+}
+
+/**
+ * Calculate density/mass based on operating margin
+ * High margins = dense, heavy, solid feel
+ * Low/negative margins = light, hollow feel
+ */
+export function getDensity(operating_margin: number): number {
+  // Normalize margin to density scale
+  // Negative margin: very light (0.3)
+  // 0-20% margin: light to medium (0.5-0.7)
+  // 20-40% margin: medium to heavy (0.7-0.9)
+  // 40%+ margin: very dense/heavy (0.9-1.0)
+
+  if (operating_margin < 0) {
+    return Math.max(0.3, 0.5 + operating_margin / 100); // 0.3 to 0.5
+  } else if (operating_margin <= 20) {
+    return normalize(operating_margin, 0, 20, 0.5, 0.7);
+  } else if (operating_margin <= 40) {
+    return normalize(operating_margin, 20, 40, 0.7, 0.9);
+  } else {
+    return Math.min(1.0, normalize(operating_margin, 40, 60, 0.9, 1.0));
+  }
+}
+
+/**
+ * Calculate heat intensity based on trading volume
+ * High volume = hot, pulsing, vibrant
+ * Low volume = cool, calm
+ */
+export function getHeatIntensity(volume: number, all_volumes: number[]): number {
+  if (!all_volumes.length || volume <= 0) return 0.0;
+
+  // Normalize to 0.0 - 1.0 range
+  const normalized = normalize(
+    volume,
+    Math.min(...all_volumes),
+    Math.max(...all_volumes),
+    0.0,
+    1.0
+  );
+
+  // Apply power curve to make high volume more dramatic
+  return Math.pow(normalized, 0.7); // Slightly compress the range
+}
+
+/**
+ * Get heat glow color based on volume intensity
+ * Low volume = cool blue
+ * Medium volume = warm yellow/orange
+ * High volume = hot red/white
+ */
+export function getHeatColor(heatIntensity: number): string {
+  if (heatIntensity < 0.3) {
+    // Cool - blue to cyan
+    return `hsl(200, 80%, ${50 + heatIntensity * 30}%)`;
+  } else if (heatIntensity < 0.6) {
+    // Warm - yellow to orange
+    const hue = 60 - (heatIntensity - 0.3) * 100; // 60 to 30
+    return `hsl(${hue}, 100%, 60%)`;
+  } else {
+    // Hot - orange to red to white
+    const hue = 30 - (heatIntensity - 0.6) * 75; // 30 to 0
+    const lightness = 60 + (heatIntensity - 0.6) * 100; // 60 to 100
+    return `hsl(${Math.max(0, hue)}, 100%, ${Math.min(95, lightness)}%)`;
+  }
+}
+
+/**
  * Calculate all visual properties for stock bubbles
  */
 export function calculateBubbleProperties(stocks: StockData[]): BubbleProperties[] {
@@ -199,6 +292,7 @@ export function calculateBubbleProperties(stocks: StockData[]): BubbleProperties
 
   return stocks.map((stock) => {
     const velocity = getVelocityVector(stock.revenue_growth, stock.month_change);
+    const heatIntensity = getHeatIntensity(stock.volume, all_volumes);
 
     return {
       ...stock,
@@ -209,6 +303,11 @@ export function calculateBubbleProperties(stocks: StockData[]): BubbleProperties
       opacity: getOpacity(stock.debt_to_equity),
       pulse_speed: getPulseSpeed(stock.volume, all_volumes),
       elasticity: getElasticity(stock.volatility),
+      // Synesthetic properties
+      roughness: getRoughness(stock.pe_ratio),
+      density: getDensity(stock.operating_margin),
+      heatIntensity: heatIntensity,
+      heatColor: getHeatColor(heatIntensity),
       x: (Math.random() - 0.5) * 40, // Random initial positions
       y: (Math.random() - 0.5) * 40,
       z: (Math.random() - 0.5) * 40,
