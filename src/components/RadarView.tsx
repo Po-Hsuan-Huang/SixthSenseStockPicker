@@ -32,7 +32,7 @@ export function RadarView() {
     }
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '700px' }}>
+        <div style={{ position: 'relative', width: '100%', height: '1200px' }}>
             {/* 3D Canvas */}
             <Canvas
                 camera={{ position: [0, 0, 50], fov: 60 }}
