@@ -65,7 +65,7 @@ export const useStockStore = create<StockStore>((set) => ({
     gravityStrength: 0.03,
     setGravityStrength: (gravityStrength) => set({ gravityStrength }),
 
-    timeSpeed: 1.0,
+    timeSpeed: 0.5,
     setTimeSpeed: (timeSpeed) => set({ timeSpeed }),
 
     collisionsEnabled: true,

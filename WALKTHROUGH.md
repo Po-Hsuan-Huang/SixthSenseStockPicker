@@ -1,4 +1,4 @@
-# Synesthetic Stock Radar - Walkthrough
+# Stock Omniverse - Walkthrough
 
 ## Overview
 We have successfully rebuilt the Synesthetic Stock Radar using React + Three.js! The application now features a performant 3D physics engine, interactive controls, and a premium dark space theme.

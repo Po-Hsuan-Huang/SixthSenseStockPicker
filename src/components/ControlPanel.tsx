@@ -72,13 +72,13 @@ export function ControlPanel() {
             {/* Time speed slider */}
             <div style={{ marginBottom: '1.5rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#a0aec0' }}>
-                    Time Speed: {timeSpeed.toFixed(1)}x
+                    Time Speed: {timeSpeed.toFixed(2)}x
                 </label>
                 <input
                     type="range"
-                    min="0.1"
-                    max="10"
-                    step="0.1"
+                    min="0"
+                    max="1"
+                    step="0.05"
                     value={timeSpeed}
                     onChange={(e) => setTimeSpeed(parseFloat(e.target.value))}
                     style={{ width: '100%' }}
@@ -87,18 +87,39 @@ export function ControlPanel() {
 
             {/* Gravity slider */}
             <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#a0aec0' }}>
-                    Gravity: {(gravityStrength * 100).toFixed(0)}%
-                </label>
-                <input
-                    type="range"
-                    min="0"
-                    max="0.2"
-                    step="0.01"
-                    value={gravityStrength}
-                    onChange={(e) => setGravityStrength(parseFloat(e.target.value))}
-                    style={{ width: '100%' }}
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <label style={{ fontSize: '0.9rem', color: '#a0aec0' }}>
+                        Gravity: {(gravityStrength * 100).toFixed(0)}%
+                    </label>
+                    {Math.abs(gravityStrength - 0.05) < 0.005 && (
+                        <span style={{ fontSize: '0.8rem', color: '#4ade80' }}>⚖️ Equilibrium</span>
+                    )}
+                </div>
+                <div style={{ position: 'relative', width: '100%' }}>
+                    <input
+                        type="range"
+                        min="0"
+                        max="0.1"
+                        step="0.005"
+                        value={gravityStrength}
+                        onChange={(e) => setGravityStrength(parseFloat(e.target.value))}
+                        style={{ width: '100%', position: 'relative', zIndex: 2 }}
+                    />
+                    {/* Tick mark at 0.05 (center of 0-0.1) */}
+                    <div
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: '2px',
+                            height: '12px',
+                            backgroundColor: '#4ade80',
+                            zIndex: 1,
+                            opacity: 0.7
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Toggle switches */}

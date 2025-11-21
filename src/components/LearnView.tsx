@@ -1,4 +1,10 @@
+import { useState } from 'react';
 import { useStockStore } from '../stores/stockStore';
+import chapter1Text from '../book_chapter/chapter1.txt?raw';
+import chapter2Text from '../book_chapter/chapter2.txt?raw';
+import chapter3Text from '../book_chapter/chapter3.txt?raw';
+
+const chapterTexts = [chapter1Text, chapter2Text, chapter3Text];
 
 const chapters = [
     {
@@ -44,37 +50,64 @@ const chapters = [
 
 export function LearnView() {
     const { chapterIndex, setChapterIndex } = useStockStore();
+    const [isReading, setIsReading] = useState(false);
 
     const currentChapter = chapters[chapterIndex];
+    const currentText = chapterTexts[chapterIndex];
 
     const handleNext = () => {
         setChapterIndex((chapterIndex + 1) % chapters.length);
     };
 
     return (
-        <div style={{ padding: '1rem', maxWidth: '800px', margin: '0 auto' }}>
-            <button
-                onClick={handleNext}
-                style={{
-                    padding: '0.75rem 1.5rem',
-                    marginBottom: '1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #667eea',
-                    backgroundColor: '#2d3561',
-                    color: '#f0f0f0',
-                    cursor: 'pointer',
-                    fontSize: '1rem',
-                    transition: 'all 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#3d4571';
-                }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#2d3561';
-                }}
-            >
-                Next Chapter →
-            </button>
+        <div style={{ padding: '1rem', maxWidth: '800px', margin: '0 auto', position: 'relative', height: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <button
+                    onClick={() => setIsReading(true)}
+                    style={{
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '8px',
+                        border: '1px solid #4ade80',
+                        backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                        color: '#4ade80',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        transition: 'all 0.2s',
+                        fontWeight: '600',
+                        backdropFilter: 'blur(5px)'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(74, 222, 128, 0.1)';
+                    }}
+                >
+                    📖 Read Full Chapter
+                </button>
+
+                <button
+                    onClick={handleNext}
+                    style={{
+                        padding: '0.75rem 1.5rem',
+                        borderRadius: '8px',
+                        border: '1px solid #667eea',
+                        backgroundColor: '#2d3561',
+                        color: '#f0f0f0',
+                        cursor: 'pointer',
+                        fontSize: '1rem',
+                        transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#3d4571';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#2d3561';
+                    }}
+                >
+                    Next Chapter →
+                </button>
+            </div>
 
             <div
                 style={{
@@ -148,6 +181,75 @@ export function LearnView() {
                     ))}
                 </div>
             </div>
+
+            {/* Reading Overlay */}
+            {isReading && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100vw',
+                        height: '100vh',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backdropFilter: 'blur(5px)',
+                        zIndex: 100,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}
+                    onClick={() => setIsReading(false)}
+                >
+                    <div
+                        style={{
+                            width: '90%',
+                            maxWidth: '800px',
+                            height: '80vh',
+                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                            borderRadius: '16px',
+                            padding: '2rem',
+                            position: 'relative',
+                            border: '1px solid rgba(102, 126, 234, 0.3)',
+                            boxShadow: '0 20px 50px rgba(0,0,0,0.5)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1rem' }}>
+                            <h2 style={{ margin: 0, color: '#f0f0f0', fontSize: '1.5rem' }}>{currentChapter.title}</h2>
+                            <button
+                                onClick={() => setIsReading(false)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#a0aec0',
+                                    fontSize: '1.5rem',
+                                    cursor: 'pointer',
+                                    padding: '0.5rem',
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div
+                            style={{
+                                flex: 1,
+                                overflowY: 'auto',
+                                paddingRight: '1rem',
+                                color: '#e0e0e0',
+                                fontSize: '1.1rem',
+                                lineHeight: '1.8',
+                                whiteSpace: 'pre-wrap', // Preserve newlines
+                                fontFamily: 'serif', // Better for reading
+                            }}
+                        >
+                            {currentText}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

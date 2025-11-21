@@ -1,4 +1,4 @@
-# 🌌 Synesthetic Stock Radar (React + Three.js)
+# 🌌 Stock Omniverse (React + Three.js)
 
 **Experience stocks through AI's sixth sense** - A stunningA 3D data visualization tool that maps financial metrics to physical properties (size, color, glow, motion) to help investors intuitively spot opportunities.
 

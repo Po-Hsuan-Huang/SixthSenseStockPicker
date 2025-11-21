@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { StockBubble } from './StockBubble';
 import { ValueCore } from './ValueCore';
 import { PhysicsEngine } from './PhysicsEngine';
@@ -75,10 +75,13 @@ export function RadarView() {
                 {/* Post-processing effects */}
                 <EffectComposer>
                     <Bloom
-                        intensity={0.5}
                         luminanceThreshold={0.2}
                         luminanceSmoothing={0.9}
+                        height={300}
+                        intensity={1.5}
                     />
+                    <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                    <Noise opacity={0.02} />
                 </EffectComposer>
             </Canvas>
 
