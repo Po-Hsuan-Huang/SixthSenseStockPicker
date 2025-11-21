@@ -59,6 +59,9 @@ Then open your browser to: **http://localhost:5173**
 | 🌫️ **Debt Level** | **Opacity** | More transparent = higher debt |
 | 🚀 **Revenue Growth** | **Velocity** | Faster movement = higher growth |
 | 🏀 **Volatility** | **Elasticity** | Bouncier = more volatile |
+| 🧱 **P/E Ratio** | **Texture** | Smooth = value, Rough = speculative |
+| ⚖️ **Operating Margin** | **Density** | Heavier = higher margins |
+| 🔥 **Trade Volume** | **Temperature** | Hotter = higher volume |
 
 ## 📦 Tech Stack
 
