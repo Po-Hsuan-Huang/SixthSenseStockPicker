@@ -13,6 +13,11 @@ let cache = null;
 let cacheTimestamp = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
+// External data store (from n8n)
+let realStockData = null;
+let realStockTimestamp = null;
+const REAL_DATA_TTL = 10 * 60 * 1000; // 10 minutes (allow some buffer for 5-min cron)
+
 // Stock tickers (same as Python version)
 const STOCK_TICKERS = [
     // Tech Giants
@@ -108,6 +113,12 @@ function generateMockStockData() {
  */
 function getStocks() {
     const now = Date.now();
+
+    // Return real data if available and fresh
+    if (realStockData && realStockTimestamp && (now - realStockTimestamp) < REAL_DATA_TTL) {
+        console.log('📡 Returning REAL data from n8n');
+        return realStockData;
+    }
 
     // Return cached data if still valid
     if (cache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
@@ -233,6 +244,40 @@ app.post('/api/cache/clear', (req, res) => {
         success: true,
         message: 'Cache cleared',
     });
+});
+
+/**
+ * POST /api/update-stocks
+ * Receive updated stock data from n8n
+ */
+app.post('/api/update-stocks', (req, res) => {
+    try {
+        const data = req.body;
+
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error('Invalid data format. Expected array of stocks.');
+        }
+
+        console.log(`📥 Received update for ${data.length} stocks from n8n`);
+
+        realStockData = data;
+        realStockTimestamp = Date.now();
+
+        // Clear internal cache to ensure next fetch uses this data
+        cache = null;
+
+        res.json({
+            success: true,
+            message: `Successfully updated ${data.length} stocks`,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('❌ Error updating stocks:', error.message);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
 });
 
 // Health check
