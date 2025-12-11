@@ -2,12 +2,14 @@ import express from 'express';
 import cors from 'cors';
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT ||3001;
 
 // Enable CORS for frontend
 app.use(cors());
 app.use(express.json());
-
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
 // Cache with 5-minute TTL
 let cache = null;
 let cacheTimestamp = null;
